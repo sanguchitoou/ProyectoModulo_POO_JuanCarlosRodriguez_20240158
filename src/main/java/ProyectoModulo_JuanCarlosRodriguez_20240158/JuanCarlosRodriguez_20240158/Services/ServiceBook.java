@@ -9,6 +9,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 //Indicamos que es el SERVICIO
@@ -21,6 +22,12 @@ public class ServiceBook {
     public List<DTOBook> getBooks(){
         List<EntityBook> getAllBooks = objRepositoryBook.findAll();
         return getAllBooks.stream().map(this::convertTODTO).collect(Collectors.toList());
+    }
+
+    //Método GET por ID
+    public EntityBook getBookByID(Long id) {
+        Optional<EntityBook> objBookOptional = objRepositoryBook.findById(id);
+        return objBookOptional.orElse(null);
     }
 
     //Método POST
