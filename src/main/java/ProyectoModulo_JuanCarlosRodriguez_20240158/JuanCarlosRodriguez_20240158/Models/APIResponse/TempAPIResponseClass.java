@@ -1,0 +1,4 @@
+package ProyectoModulo_JuanCarlosRodriguez_20240158.JuanCarlosRodriguez_20240158.Models.APIResponse;
+
+public class TempAPIResponseClass {
+}
