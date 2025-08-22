@@ -3,7 +3,9 @@ package ProyectoModulo_JuanCarlosRodriguez_20240158.JuanCarlosRodriguez_20240158
 import ProyectoModulo_JuanCarlosRodriguez_20240158.JuanCarlosRodriguez_20240158.Entities.EntityBook;
 import ProyectoModulo_JuanCarlosRodriguez_20240158.JuanCarlosRodriguez_20240158.Models.DTO.DTOBook;
 import ProyectoModulo_JuanCarlosRodriguez_20240158.JuanCarlosRodriguez_20240158.Repositories.RepositoryBook;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,13 +24,61 @@ public class ServiceBook {
     }
 
     //Método POST
-
+    public DTOBook postBook (DTOBook dtoBook){
+        if (dtoBook == null){
+            throw new IllegalArgumentException("Los datos no pueden estar vacíos");
+        }
+        try {
+            EntityBook objPostBook = objRepositoryBook.save(convertTOEntity(dtoBook));
+            return convertTODTO(objPostBook);
+        } catch (Exception e){
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
 
     //Método PUT
+    public DTOBook putBook(DTOBook dtoBook, Long id) {
+        if(dtoBook == null){
+            throw new IllegalArgumentException("No pueden haber campos vacíos");
+        }
 
+        //Creamos variable entidad de valores existentes de los libros
+        EntityBook bookExists = objRepositoryBook.findById(id).orElseThrow(() -> new EntityNotFoundException("Libro no encontrado con el id: " + id));
+
+        //Variables que se pueden actualizar
+        bookExists.setTitulo(dtoBook.getTitulo());
+        bookExists.setIsbn(dtoBook.getIsbn());
+        bookExists.setAño_publicacion(dtoBook.getAño_publicacion());
+        bookExists.setGenero(dtoBook.getGenero());
+        bookExists.setAutor_id(dtoBook.getAutor_id());
+
+        EntityBook area = objRepositoryBook.save(bookExists);
+
+        return convertTODTO(area);
+    }
 
     //Método DELETE
+    public boolean removeBook(Long id){
+        try{
+            //Verificamos que el ID no sea nulo
+            if (id == null) {
+                throw new IllegalArgumentException("El ID del libro no puede ser nulo o vacío");
+            }
 
+            //Verificamos la existencia
+            boolean existsIdBook = objRepositoryBook.existsById(id);
+            if (!existsIdBook) {
+                throw new EntityNotFoundException("No se encontró el área con ID: " + id);
+            }
+
+            //Removemos el libro
+            objRepositoryBook.deleteById(id);
+            return true;
+        }
+        catch (EmptyResultDataAccessException e){
+            throw new EntityNotFoundException("No se encontró el libro registrado");
+        }
+    }
 
     //Convertir a DTO
     private DTOBook convertTODTO(EntityBook entityBook){

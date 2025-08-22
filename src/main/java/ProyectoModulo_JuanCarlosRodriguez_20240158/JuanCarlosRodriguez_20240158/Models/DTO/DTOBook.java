@@ -19,5 +19,6 @@ public class DTOBook {
     private int año_publicacion;
     //Género
     private String genero;
+    //Foránea de autor
     private int autor_id;
 }
